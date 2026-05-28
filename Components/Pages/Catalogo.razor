@@ -1,0 +1,210 @@
+﻿@page "/catalogo"
+@inject HttpClient Http
+@using MiuMiu.Models
+
+<PageTitle>Miu Miu - Catálogo</PageTitle>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/Style.css" />
+</head>
+
+<nav class="navbar">
+    <div class="navbar-logo">
+        <a href="/">
+            <img src="/img/logo_miumiu.jpeg" alt="Miu Miu Logo" class="logo-img">
+        </a>
+    </div>
+
+    <div class="navbar-icons">
+        <a href="/catalogo" class="icon-link" aria-label="Bolsa">
+            <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+
+        <a href="clientes" class="icon-link" aria-label="Sistema CRUD">
+            <i class="fa-solid fa-database"></i>
+        </a>
+
+        <a href="ventas" class="icon-link" aria-label="Historial de Ventas">
+            <i class="fa-solid fa-cash-register"></i>
+        </a>
+    </div>
+</nav>
+
+<main>
+    <section class="filters-section">
+        <div class="filters-container">
+            <ul class="filter-list">
+                @if (listaCategorias != null)
+                {
+                    @foreach (var cat in listaCategorias)
+                    {
+                        <li>
+                            <label>
+                                <input type="checkbox"
+                                       value="@cat.Id"
+                                       @onchange="(e) => AlCambiarCategoria(cat.Id, e.Value)"
+                                       checked="@categoriasSeleccionadas.Contains(cat.Id)" />
+                                @cat.nombre
+                            </label>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <span>Cargando colecciones...</span>
+                }
+            </ul>
+        </div>
+    </section>
+
+    <section class="catalog-section" id="catalogo">
+        @if (cargando)
+        {
+            <div class="loading-message">
+                <p>Cargando prendas, por favor espera...</p>
+            </div>
+        }
+        else
+        {
+            <div class="catalog-grid">
+                @if (ListaActual != null && ListaActual.Any())
+                {
+                    @foreach (var prod in ListaActual)
+                    {
+                        <article class="product-card">
+                            <div class="product-info">
+                                <h3 class="product-name">@prod.nombre</h3>
+                                <p class="product-desc">@prod.descripcion</p>
+                                <p class="product-cat-tag">Categoría: @prod.categoria</p>
+                            </div>
+                            <div class="product-action-area">
+                                <p class="product-price">$@prod.precio</p>
+                                <button class="learn-more-btn">saber más</button>
+                            </div>
+                        </article>
+                    }
+                }
+                else
+                {
+                    @* VERIFICACIÓN ACORDE A MIUMIU POR SI NO HAY PRENDAS *@
+                    <div class="no-products-message" style="width: 100%; text-align: center; padding: 40px;">
+                        <p>No se encontró nada en esa categoría de prendas.</p>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</main>
+
+<footer class="simple-footer">
+    <div class="footer-content">
+        <p>&copy; 2026 Miu Miu. Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+@code {
+    private List<ProductoModelo>? listaTodos;
+    private List<CategoriaModelo>? listaCategorias;
+
+    private IEnumerable<dynamic>? ListaActual;
+
+    private string modoVista = "Todos";
+    private bool cargando = true;
+
+    private List<int> categoriasSeleccionadas = new List<int>();
+
+    private string urlTodos = "https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net/api/comercio/productos";
+    private string urlCategorias = "https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net/api/comercio/categorias";
+    private string urlFiltroCategoriaBase = "https://api-udec-pweb-aedec9hxbugye0am.westus3-01.azurewebsites.net/api/comercio/categorias/";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            listaCategorias = await Http.GetFromJsonAsync<List<CategoriaModelo>>(urlCategorias);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar categorías: {ex.Message}");
+            listaCategorias = new List<CategoriaModelo>();
+        }
+
+        await CargarTodos();
+    }
+
+    private async Task CargarTodos()
+    {
+        cargando = true;
+        modoVista = "Todos";
+        categoriasSeleccionadas.Clear();
+        try
+        {
+            if (listaTodos == null)
+                listaTodos = await Http.GetFromJsonAsync<List<ProductoModelo>>(urlTodos);
+
+            ListaActual = listaTodos;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar todas las prendas: {ex.Message}");
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private async Task AlCambiarCategoria(int categoriaId, object? isChecked)
+    {
+        bool marcado = (bool)(isChecked ?? false);
+
+        if (marcado)
+        {
+            categoriasSeleccionadas.Add(categoriaId);
+        }
+        else
+        {
+            categoriasSeleccionadas.Remove(categoriaId);
+        }
+
+        await BuscarPorCategorias();
+    }
+
+    private async Task BuscarPorCategorias()
+    {
+        if (!categoriasSeleccionadas.Any())
+        {
+            await CargarTodos();
+            return;
+        }
+
+        cargando = true;
+        modoVista = "Categoria";
+        var resultadosCombinados = new List<ProductoModelo>();
+
+        try
+        {
+            foreach (var id in categoriasSeleccionadas)
+            {
+                var urlConsulta = $"{urlFiltroCategoriaBase}{id}";
+                var productosCategoria = await Http.GetFromJsonAsync<List<ProductoModelo>>(urlConsulta);
+
+                if (productosCategoria != null)
+                {
+                    resultadosCombinados.AddRange(productosCategoria);
+                }
+            }
+
+            ListaActual = resultadosCombinados;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al filtrar prendas por colección: {ex.Message}");
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+}

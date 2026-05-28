@@ -131,3 +131,482 @@ body {
         text-decoration: none;
         font-size: 13px;
     }
+
+
+
+
+/* --- SECCIÓN DE FILTRO SELECT --- */
+.filters-section {
+    width: 100%;
+    background-color: var(--color-fondo-principal);
+    padding: 25px 20px;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.filters-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.filter-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-texto-oscuro);
+}
+
+.filter-checkbox-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-texto-medio);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+    /* Ocultar checkbox nativo horrible */
+    .checkbox-label input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+/* Crear el checkbox personalizado de Miu Miu (Cuadrado Negro/Blanco) */
+.checkbox-custom {
+    height: 16px;
+    width: 16px;
+    background-color: transparent;
+    border: 1px solid var(--color-texto-claro);
+    margin-right: 8px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Al pasar el mouse */
+.checkbox-label:hover input ~ .checkbox-custom {
+    border-color: var(--color-texto-oscuro);
+}
+
+/* Cuando está seleccionado */
+.checkbox-label input:checked ~ .checkbox-custom {
+    background-color: var(--color-texto-oscuro);
+    border-color: var(--color-texto-oscuro);
+}
+
+/* El indicador del check (una pequeña marca blanca) */
+.checkbox-custom:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label input:checked ~ .checkbox-custom:after {
+    display: block;
+}
+
+/* Botón de limpiar filtros */
+.clear-filters-btn {
+    background: transparent;
+    border: 1px solid var(--color-texto-atenuado);
+    color: var(--color-texto-medio);
+    padding: 6px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .clear-filters-btn:hover {
+        background-color: var(--color-texto-oscuro);
+        color: var(--color-fondo-principal);
+        border-color: var(--color-texto-oscuro);
+    }
+
+/* --- CUADRÍCULA DEL CATÁLOGO (FLEX) --- */
+.catalog-section {
+    width: 100%;
+    background-color: var(--color-fondo-principal);
+    padding: 40px 20px;
+}
+
+.catalog-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* --- TARJETA DE PRODUCTO INDEPENDIENTE CON BORDE Y HOVER --- */
+.product-card {
+    flex: 1;
+    min-width: 260px;
+    max-width: 280px;
+    padding: 24px;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--color-fondo-principal);
+    /* Borde visible solicitado para diferenciar cada elemento */
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
+    /* Transición suave para animaciones */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+    /* Efecto Hover */
+    .product-card:hover {
+        transform: translateY(-5px); /* Desplazamiento hacia arriba */
+        border-color: var(--color-texto-claro);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    }
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-texto-medio);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-desc {
+    font-size: 12px;
+    color: var(--color-texto-atenuado);
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.product-cat-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-texto-claro);
+    margin-bottom: 15px;
+}
+
+.product-action-area {
+    width: 100%;
+}
+
+.product-price {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-texto-medio);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.learn-more-btn {
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    border: 1px solid var(--color-texto-medio);
+    color: var(--color-texto-medio);
+    padding: 12px 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .learn-more-btn:hover {
+        background-color: var(--color-texto-medio);
+        color: var(--color-fondo-principal);
+    }
+
+.loading-message {
+    padding: 80px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-texto-atenuado);
+}
+
+.no-products-message {
+    width: 100%;
+    text-align: center;
+    padding: 60px;
+    color: var(--color-texto-atenuado);
+    font-size: 13px;
+}
+
+/* --- SOLO LA SECCIÓN DE FILTROS POR CHECKBOX --- */
+.filters-section {
+    width: 100%;
+    background-color: var(--color-fondo-principal, #ffffff);
+    padding: 30px 20px;
+    border-bottom: 1px solid var(--color-borde, #e5e5e5);
+}
+
+.filters-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.filter-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+    /* Texto y comportamiento del Label */
+    .filter-list li label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--color-texto-medio, #333333);
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s ease;
+    }
+
+        .filter-list li label:hover {
+            color: var(--color-texto-oscuro, #111111);
+        }
+
+    /* El cuadrito del Checkbox en negro */
+    .filter-list li input[type="checkbox"] {
+        accent-color: var(--color-texto-oscuro, #111111);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+
+/* ==========================================================================
+   ÚNICAMENTE SECCIÓN CRUD (FORMULARIO, TABLA Y ACCIONES)
+   ========================================================================== */
+
+.crud-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* --- TARJETAS Y CONTENEDORES --- */
+.card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 0px; /* Estilo minimalista/cuadrado */
+}
+
+.shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.card-header {
+    background-color: #ffffff;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+    .card-header h3 {
+        margin: 0;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+    }
+
+.card-body {
+    padding: 30px 25px;
+}
+
+/* --- CONTROL DEL FORMULARIO GRID --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cccccc;
+    font-size: 13px;
+    background-color: #ffffff;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+    .form-control:focus {
+        outline: none;
+        border-color: #111111;
+    }
+
+/* --- ESTILO DE LA TABLA --- */
+.table-container {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+}
+
+    .custom-table th {
+        background-color: #fafafa;
+        padding: 15px 20px;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        border-bottom: 1px solid #e5e5e5;
+        color: #333333;
+    }
+
+    .custom-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e5e5;
+        vertical-align: middle;
+    }
+
+.font-bold {
+    font-weight: 600;
+}
+
+.text-muted {
+    color: #999999;
+}
+
+/* --- BOTONES Y COMPORTAMIENTO --- */
+.button-group {
+    margin-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 25px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-success {
+    background-color: #111111;
+    color: #ffffff;
+}
+
+    .btn-success:hover {
+        background-color: #ffffff;
+        border-color: #111111;
+        color: #111111;
+    }
+
+.btn-warning {
+    background-color: #b11226;
+    color: #ffffff;
+}
+
+    .btn-warning:hover {
+        background-color: #7a0b18;
+    }
+
+.btn-secondary {
+    background-color: #767676;
+    color: #ffffff;
+}
+
+    .btn-secondary:hover {
+        background-color: #444444;
+    }
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 8px;
+    margin-right: 5px;
+    transition: opacity 0.2s;
+}
+
+    .btn-icon:hover {
+        opacity: 0.6;
+    }
+
+/* Contenedor en modo edición */
+.edit-mode {
+    border: 1px solid #b11226;
+    background-color: #fffdfd;
+}

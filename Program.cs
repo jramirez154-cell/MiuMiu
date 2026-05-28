@@ -13,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 

@@ -1,0 +1,216 @@
+﻿@page "/clientes"
+@using MiuMiu.Data
+@using MiuMiu.Models
+@inject AppDbContext db
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+
+<head>
+    <base href="/" />
+    <link rel="stylesheet" href="css/StyleClientes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<nav class="navbar">
+    <div class="navbar-logo">
+        <a href="/">
+            <img src="/img/logo_miumiu.jpeg" alt="Miu Miu Logo" class="logo-img">
+        </a>
+    </div>
+
+    <div class="navbar-icons">
+        <a href="catalogo" class="icon-link" aria-label="Bolsa">
+            <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+
+        <a href="/clientes" class="icon-link" aria-label="Sistema CRUD">
+            <i class="fa-solid fa-database"></i>
+        </a>
+
+        <a href="ventas" class="icon-link" aria-label="Historial de Ventas">
+            <i class="fa-solid fa-cash-register"></i>
+        </a>
+    </div>
+</nav>
+
+<div class="crud-container">
+    @* --- BLOQUE 1: FORMULARIO DE REGISTRO --- *@
+    <div class="card shadow">
+        <div class="card-header">
+            <h3><i class="fa-solid fa-user-plus"></i> Registrar Nuevo Cliente</h3>
+        </div>
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input @bind="registroCliente.Nombre" class="form-control" placeholder="Ej. Maria Lopez" />
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Contacto</label>
+                    <input @bind="registroCliente.Telefono" type="tel" class="form-control" placeholder="Ej. 3121234567" />
+                </div>
+                <div class="form-group full-width">
+                    <label>Correo Electrónico</label>
+                    <input @bind="registroCliente.Email" type="email" class="form-control" placeholder="nombre@correo.com" />
+                </div>
+                <div class="form-group full-width">
+                    <label>Fecha de Registro en Sistema</label>
+                    <input @bind="registroCliente.FechaCliente" type="date" class="form-control" />
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn btn-success" @onclick="AgregarCliente">Dar de Alta Cliente</button>
+            </div>
+        </div>
+    </div>
+
+    @* --- BLOQUE 2: TABLA DE VISUALIZACIÓN --- *@
+    <div class="table-container shadow">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente VIP</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Fecha Alta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cli in listaClientes)
+                {
+                    <tr>
+                        <td><small class="text-muted">#@cli.Id</small></td>
+                        <td class="font-bold">@cli.Nombre</td>
+                        <td>@cli.Telefono</td>
+                        <td><small>@cli.Email</small></td>
+                        <td>
+                            @{
+                                // Resaltamos de forma especial si el cliente es una alta reciente de este mes (menos de 30 días)
+                                var diasDesdeRegistro = (DateTime.Today - cli.FechaCliente).TotalDays;
+                                var estiloAlerta = diasDesdeRegistro <= 30 ? "color: #b11226; font-weight: bold;" : "color: #111111;";
+                            }
+
+                            <span style="@estiloAlerta">
+                                @if (diasDesdeRegistro <= 30)
+                                {
+                                    <span>✨ </span> @* Icono de alta nueva o cliente reciente *@
+                                }
+                                @cli.FechaCliente.ToShortDateString()
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-icon edit" @onclick="() => IniciarEdicion(cli)">✏️</button>
+                            <button class="btn-icon delete" @onclick="() => EliminarCliente(cli)">🗑️</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    @* --- BLOQUE 3: FORMULARIO DE EDICIÓN --- *@
+    @if (clienteParaEditar != null)
+    {
+        <div class="card shadow edit-mode">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-user-pen"></i> Editando Perfil: @clienteParaEditar.Nombre (ID: @clienteParaEditar.Id)</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input @bind="clienteParaEditar.Nombre" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input @bind="clienteParaEditar.Telefono" class="form-control" />
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Email</label>
+                        <input @bind="clienteParaEditar.Email" type="email" class="form-control" />
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-warning" @onclick="ConfirmarCambios">Actualizar Datos</button>
+                    <button class="btn btn-secondary" @onclick="CancelarAccion">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<footer class="simple-footer">
+    <div class="footer-content">
+        <p>&copy; 2026 Miu Miu. Todos los derechos reservados.</p>
+        <div class="footer-links">
+            <a href="#">Privacidad</a>
+            <a href="#">Términos</a>
+            <a href="#">Contacto</a>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private Cliente registroCliente = new Cliente { FechaCliente = DateTime.Today }; 
+    private List<Cliente> listaClientes = new List<Cliente>();
+    private Cliente? clienteParaEditar = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ObtenerDatos(); 
+    }
+
+    private async Task ObtenerDatos()
+    {
+        // Se carga directamente la tabla local de Clientes desde el DbContext
+        listaClientes = await db.Clientes.ToListAsync();
+    }
+
+    private async Task AgregarCliente()
+    {
+        if (!string.IsNullOrWhiteSpace(registroCliente.Nombre))
+        {
+            db.Clientes.Add(registroCliente);
+            await db.SaveChangesAsync();
+
+            await ObtenerDatos();
+
+            // Limpiamos el formulario reseteando la instancia
+            registroCliente = new Cliente { FechaCliente = DateTime.Today };
+        }
+    }
+
+    private void IniciarEdicion(Cliente item)
+    {
+        clienteParaEditar = item;
+    }
+
+    private async Task ConfirmarCambios()
+    {
+        if (clienteParaEditar != null)
+        {
+            await db.SaveChangesAsync();
+            clienteParaEditar = null;
+            await ObtenerDatos();
+        }
+    }
+
+    private void CancelarAccion()
+    {
+        clienteParaEditar = null;
+    }
+
+    private async Task EliminarCliente(Cliente item)
+    {
+        db.Clientes.Remove(item);
+        await db.SaveChangesAsync();
+        await ObtenerDatos();
+    }
+}
+
+
+
