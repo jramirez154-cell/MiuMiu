@@ -1,32 +1,41 @@
-﻿namespace MiuMiu.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MiuMiu.Models
 {
     public class Cliente
     {
         public int Id { get; set; }
-        public string nombre { get; set; } = string.Empty;
-        public string telefono { get; set; } = string.Empty;
-        public string email { get; set; } = string.Empty;
-        public DateTime fechaRegistro { get; set; } = DateTime.Now;
+        public string Nombre { get; set; } = "";
+        public string Telefono { get; set; } = "";
+        public string Email { get; set; } = "";
+        public DateTime FechaCliente { get; set; } = DateTime.Now;
+        public List<Venta> Venta { get; set; } = new();
     }
 
     public class Venta
     {
         public int Id { get; set; }
-        public int clienteId { get; set; } 
-        public DateTime fecha { get; set; } = DateTime.Now;
-        public decimal total { get; set; }
-        public string estado { get; set; } = string.Empty;
+        public DateTime Fecha { get; set; } = DateTime.Now;
+
+        public decimal Total { get; set; }
+
+        public string Estado { get; set; } = "";
+        public int ClienteId { get; set; }
+        public Cliente? Cliente { get; set; }
+        public List<DetalleVenta> DetalleVenta { get; set; } = new();
     }
 
-    public class Detalle
+    public class DetalleVenta
     {
         public int Id { get; set; }
-        public int ventaId { get; set; } 
+        public int VentaId { get; set; }
+        public Venta? Venta { get; set; }
 
-        // Aquí guardas el "Id" que viene de la clase ProductoTodos de la API
-        public int productoApiId { get; set; }
+        public int ProductoApiId { get; set; }
 
-        public int cantidad { get; set; }
-        public decimal precio { get; set; }
+        public int Cantidad { get; set; }
+
+        public decimal Precio { get; set; }
+
     }
 }
